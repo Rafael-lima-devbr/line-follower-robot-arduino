@@ -4,7 +4,12 @@ Line follower robot using 5 analog IR sensors and a PD (Proportional + Derivativ
 
 **Status:** Experimental robotics project
 
-<!-- MEDIA: Adicione aqui uma foto ou GIF curto do robô Arduino seguindo a linha. -->
+<img width="1264" height="948" alt="image" src="https://github.com/user-attachments/assets/889902a1-e428-4598-9a29-89738003815b" />
+
+<img width="1264" height="948" alt="image" src="https://github.com/user-attachments/assets/ec44f46a-6178-44b0-8706-ebb24cbca951" />
+
+<img width="720" height="404" alt="line-follower-demo-horizontal-fixed" src="https://github.com/user-attachments/assets/48d61bf6-a217-47c8-99e7-691b84fe5141" />
+
 
 ---
 
