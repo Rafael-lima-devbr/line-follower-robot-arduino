@@ -6,9 +6,11 @@ Line follower robot using 5 analog IR sensors and a PD (Proportional + Derivativ
 
 ## Prototype
 
+This control code was tested and used across multiple line-follower robot builds. The two photos below show different robots that used the same code base during development and testing.
+
 <p align="center">
-  <img width="47%" alt="Arduino line-follower robot prototype view 1" src="https://github.com/user-attachments/assets/889902a1-e428-4598-9a29-89738003815b" />
-  <img width="47%" alt="Arduino line-follower robot prototype view 2" src="https://github.com/user-attachments/assets/ec44f46a-6178-44b0-8706-ebb24cbca951" />
+  <img width="47%" alt="Line-follower robot build using the PD control code" src="https://github.com/user-attachments/assets/889902a1-e428-4598-9a29-89738003815b" />
+  <img width="47%" alt="Another line-follower robot build using the same control code" src="https://github.com/user-attachments/assets/ec44f46a-6178-44b0-8706-ebb24cbca951" />
 </p>
 
 ## Demo
@@ -17,7 +19,7 @@ Line follower robot using 5 analog IR sensors and a PD (Proportional + Derivativ
   <img width="85%" alt="Line-follower robot running on the track" src="https://github.com/user-attachments/assets/48d61bf6-a217-47c8-99e7-691b84fe5141" />
 </p>
 
-<p align="center"><sub>Short test run demonstrating the robot following the track.</sub></p>
+<p align="center"><sub>Short test run demonstrating the control code in operation on the track.</sub></p>
 
 ---
 
