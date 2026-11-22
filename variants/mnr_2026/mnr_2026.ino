@@ -1,7 +1,3 @@
-#include <Servo.h>
-
-Servo scanner;
-
 // Sensores
 #define TEMP_SENSOR      A0
 #define GAS_SENSOR       A15
@@ -37,7 +33,6 @@ void setup(){
   pinMode(motorE2, OUTPUT);
   pinMode(motorD1, OUTPUT);
   pinMode(motorD2, OUTPUT);
-  scanner.attach(6);
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(LED_VERDE, OUTPUT);
@@ -53,57 +48,47 @@ void loop(){
   float dist = readDistance();
   float temp = readTemperature();
   int gasRaw = readGasRaw();
-  int angle;
+
   bool alertaLeve =
           (temp >45  && temp <= 55) ||
           (dist >= 10 && dist < 15) ||
           (gasRaw > 250 && gasRaw <= 350);
 
-    bool alertaGrave =
+  bool alertaGrave =
           (temp > 55) ||
           (dist < 10) ||
           (gasRaw > 350);
 
+  Serial.print("Distancia: ");
+  Serial.print(dist);
+  Serial.print(" cm | Temperatura: ");
+  Serial.print(temp);
+  Serial.print(" °C | Gas: ");
+  Serial.println(gasRaw);
+
   if (alertaGrave) {
-      angle = 180;
-      scanner.write(angle);
-  } else {
-    angle = 0;
-    scanner.write(angle);
-  }
-
-      //Serial.print("Posicao: ");
-      //Serial.print(angle);
-      Serial.print("° | Distancia: ");
-      Serial.print(dist);
-      Serial.print(" cm | Temperatura: ");
-      Serial.print(temp);
-      Serial.print(" °C | Gas: ");
-      Serial.println(gasRaw);
-
-      if (alertaGrave) {
-          tone(BUZZER, 1000);
-          digitalWrite(LED_VERMELHO, HIGH);
-          digitalWrite(LED_AMARELO, LOW);
-          digitalWrite(LED_VERDE, LOW);
-          while (dist < 10){
-          analogWrite(motorD1, 0); analogWrite(motorE1, 0);
-          analogWrite(motorD2, 0); analogWrite(motorE2, 0);
-          dist = readDistance();
-          }
-
-      } else if (alertaLeve) {
-          noTone(BUZZER);
-          digitalWrite(LED_VERDE, LOW);
-          digitalWrite(LED_AMARELO, HIGH);
-          digitalWrite(LED_VERMELHO, LOW);
-
-      } else {
-          noTone(BUZZER);
-          digitalWrite(LED_VERDE, HIGH);
-          digitalWrite(LED_AMARELO, LOW);
-          digitalWrite(LED_VERMELHO, LOW);
+      tone(BUZZER, 1000);
+      digitalWrite(LED_VERMELHO, HIGH);
+      digitalWrite(LED_AMARELO, LOW);
+      digitalWrite(LED_VERDE, LOW);
+      while (dist < 10){
+        analogWrite(motorD1, 0); analogWrite(motorE1, 0);
+        analogWrite(motorD2, 0); analogWrite(motorE2, 0);
+        dist = readDistance();
       }
+
+  } else if (alertaLeve) {
+      noTone(BUZZER);
+      digitalWrite(LED_VERDE, LOW);
+      digitalWrite(LED_AMARELO, HIGH);
+      digitalWrite(LED_VERMELHO, LOW);
+
+  } else {
+      noTone(BUZZER);
+      digitalWrite(LED_VERDE, HIGH);
+      digitalWrite(LED_AMARELO, LOW);
+      digitalWrite(LED_VERMELHO, LOW);
+  }
 }
 
 void readraw(){
@@ -117,8 +102,8 @@ void calibracao() {
   while (millis() - timer < 5000) {
     readraw();
     for (int i = 0; i<5; i++){
-    if (sensor_max[i] < sensor_bruto[i]) sensor_max[i] = sensor_bruto[i];
-    if (sensor_min[i] > sensor_bruto[i]) sensor_min[i] = sensor_bruto[i];
+      if (sensor_max[i] < sensor_bruto[i]) sensor_max[i] = sensor_bruto[i];
+      if (sensor_min[i] > sensor_bruto[i]) sensor_min[i] = sensor_bruto[i];
     }
   }
 }
@@ -151,12 +136,8 @@ int readGasRaw() {
 void normalizacao() {
   readraw();
   for (int i = 0; i<5; i++){
-  sensor_normal[i] = constrain(map(sensor_bruto[i], sensor_min[i], sensor_max[i], 0, 100), 0, 100);
-  //Serial.print(" | ");
-  //Serial.print(sensor_normal[i]);
-  //Serial.print(" | ");
+    sensor_normal[i] = constrain(map(sensor_bruto[i], sensor_min[i], sensor_max[i], 0, 100), 0, 100);
   }
-  //Serial.println();
 }
 
 float posicao_linha() {
@@ -172,8 +153,8 @@ float posicao_linha() {
       gap = false;
   } else {
     gap = true;
-}
-return posicao;
+  }
+  return posicao;
 }
 
 float PID(float posicao){
@@ -204,25 +185,25 @@ void motor(float pid) {
   } else {
       analogWrite(motorD1, 0);
       analogWrite(motorD2, -velocidade_direita);
-    }
+  }
+
   if (velocidade_esquerda >= 0) {
       analogWrite(motorE1, velocidade_esquerda);
       analogWrite(motorE2, 0);
   } else {
       analogWrite(motorE1, 0);
       analogWrite(motorE2, -velocidade_esquerda);
-    }
+  }
 }
 
 void digital(){
   normalizacao();
   for (int i = 0; i<5; i++) {
-  if (sensor_normal[i] >= 80) {
-  sensor_digital[i] = 1;
-  } else sensor_digital[i] = 0;
-  //Serial.print(" | ");
-  //Serial.print(sensor_digital[i]);
-  //Serial.print(" | ");
+    if (sensor_normal[i] >= 80) {
+      sensor_digital[i] = 1;
+    } else {
+      sensor_digital[i] = 0;
+    }
   }
 }
 
@@ -251,8 +232,7 @@ void controle(){
   } else if(gap) {
       motor(0);
       posicao_linha();
-    }
-  else {
+  } else {
       float pid = PID(pos);
       motor(pid);
   }

@@ -72,7 +72,6 @@ It currently integrates:
 - ultrasonic distance sensing;
 - analog temperature sensing;
 - gas sensing;
-- a servo used as a scanner/indicator actuator;
 - green, yellow and red status LEDs;
 - buzzer alerts;
 - normal, warning and critical operating states;
@@ -109,7 +108,6 @@ The MNR-specific source code is available at:
 - ultrasonic distance sensor
 - analog temperature sensor
 - gas sensor
-- servo motor
 - green, yellow and red LEDs
 - buzzer
 
