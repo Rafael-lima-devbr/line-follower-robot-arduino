@@ -1,8 +1,23 @@
 # Line Follower Robot with PD Control
 
-Line follower robot using 5 analog IR sensors and a PD (Proportional + Derivative) controller for real-time trajectory correction. The system includes automatic calibration, sensor normalization, line position calculation, and logic for sharp curves and stopping conditions.
+Arduino line-follower robotics project using 5 analog IR sensors and PD (Proportional + Derivative) control for real-time trajectory correction. The repository also contains specialized robot variants built from the same line-following base.
 
 **Status:** Experimental robotics project
+
+## Repository Structure
+
+```text
+line-follower-robot-arduino/
+├── line_follower.ino
+├── variants/
+│   └── mnr_2026/
+│       └── mnr_2026.ino
+├── LICENSE
+└── README.md
+```
+
+- `line_follower.ino` — original line-following implementation used across multiple robot builds.
+- `variants/mnr_2026/mnr_2026.ino` — MNR 2026 version combining line following with environmental sensing and alert logic.
 
 ## Prototype
 
@@ -23,7 +38,7 @@ This control code was tested and used across multiple line-follower robot builds
 
 ---
 
-## How It Works
+## Base Line-Following System
 
 **1. Calibration**  
 Runs for ~5 seconds on startup. Captures the minimum and maximum values of each sensor to normalize readings across different environments.
@@ -32,7 +47,7 @@ Runs for ~5 seconds on startup. Captures the minimum and maximum values of each 
 Raw sensor values are mapped to a 0–100 scale, ensuring more consistent behavior across lighting and surface variations.
 
 **3. Line Position Calculation**  
-Weighted average using weights `[-2, -1, 0, 1, 2]`. If the line is lost, the last valid position is used instead of resetting to zero.
+Uses a weighted average with weights `[-2, -1, 0, 1, 2]` to estimate the line position.
 
 **4. PD Control**
 
@@ -41,59 +56,79 @@ error = setpoint (0) - position
 output = kp * error + kd * derivative
 ```
 
-Derivative is calculated using `dt = (now - lasttime) / 1000.0`.
-
 **5. Motor Control**  
-Base speed is adjusted by the PD output. A minimum power threshold prevents dead zones. Supports forward and reverse direction.
+Base speed is adjusted by the controller output, including support for forward and reverse motor direction and minimum-power handling.
 
 ---
 
-## Special Logic
+## MNR 2026 Variant
+
+The MNR 2026 implementation extends the line-following robot with environmental sensing and alert behavior while keeping the same sensor-based navigation approach.
+
+It currently integrates:
+
+- 5 analog sensors for line following;
+- PD-based trajectory correction;
+- ultrasonic distance sensing;
+- analog temperature sensing;
+- gas sensing;
+- a servo used as a scanner/indicator actuator;
+- green, yellow and red status LEDs;
+- buzzer alerts;
+- normal, warning and critical operating states;
+- motor stopping while a critical close obstacle remains detected.
+
+The MNR-specific source code is available at:
+
+`variants/mnr_2026/mnr_2026.ino`
+
+---
+
+## Special Line-Following Logic
 
 | Condition | Behavior |
 |---|---|
 | Strong left sensors activated | Sharp left curve |
 | Strong right sensors activated | Sharp right curve |
-| All sensors detect line | Wait briefly; if center sensor is lost → full stop |
+| All sensors detect line | Timed verification followed by a stop condition |
+| Line not detected | Continue using the gap-handling behavior |
 
 ---
 
 ## Hardware
 
-- Arduino (Uno or Nano)
+### Base robot
+
+- Arduino-compatible board
 - 5 analog IR sensors
-- Motor driver (e.g. L298N)
+- motor driver
 - 2 DC motors
+
+### MNR 2026 additions
+
+- ultrasonic distance sensor
+- analog temperature sensor
+- gas sensor
+- servo motor
+- green, yellow and red LEDs
+- buzzer
 
 ---
 
 ## Parameters
 
+The control parameters vary between robot versions and should be tuned for the specific hardware, track and sensor calibration.
+
+The MNR 2026 variant currently uses:
+
 | Parameter | Value |
 |---|---|
 | `kp` | 130 |
 | `kd` | 2 |
-| `base_speed` | 170 |
+| `velocidade_base` | 140 |
 | Sensor weights | `[-2, -1, 0, 1, 2]` |
 | Motor output range | -255 to 255 |
-| Minimum power threshold | ±120 |
-
----
-
-## Program Flow
-
-```text
-setup()
-├── initialization
-├── pin configuration
-└── calibration
-
-loop()
-└── control()
-    ├── digital sensor reading
-    ├── special curve/stop logic
-    └── PD calculation + motor output
-```
+| Minimum motor threshold | ±100 |
 
 ---
 
